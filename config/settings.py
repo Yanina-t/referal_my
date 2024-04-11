@@ -9,8 +9,13 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
-
+import os
+from datetime import timedelta
 from pathlib import Path
+
+from dotenv import load_dotenv
+
+load_dotenv(dotenv_path='.env')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-mu8q2%0&6y^*p@_^ci-ucds9u=va-5t3+xu4^%+*pz#o=_+u#8'
+SECRET_KEY = os.getenv('SECRET_KEY_PRODUCTION')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -37,6 +42,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'rest_framework_simplejwt',
+    'drf_yasg',
+    'users',
 ]
 
 MIDDLEWARE = [
@@ -75,8 +84,12 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': os.getenv('DB_ENGINE'),
+        'NAME': os.getenv('POSTGRES_DB'),
+        'USER': os.getenv('POSTGRES_USER'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
+        'HOST': 'localhost',
+        'PORT': 5432
     }
 }
 
@@ -116,8 +129,30 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATICFILES_DIRS = [BASE_DIR / "static"]
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / "media"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Настройки JWT-токенов
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+}
+
+# Настройки срока действия токенов
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=25),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+}
+
+AUTH_USER_MODEL = 'users.User'
+
+# Допустимое время жизни кода подтверждения в секундах (например, 5 минут)
+VERIFICATION_CODE_EXPIRATION_TIME = 60  # 60 секунд = 1 минута
