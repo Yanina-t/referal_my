@@ -1,0 +1,14 @@
+<!--home.html-->
+{% extends 'users/base.html' %}
+{% block content %}
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <h2>Получите уникальные бонусы!</h2>
+        <p>Для начала введите свой номер телефона:</p>
+        <form action="{% url 'users:phone_auth' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary" onclick="window.location.href='{% url 'users:phone_auth' %}'">Получить мои бонусы!!</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

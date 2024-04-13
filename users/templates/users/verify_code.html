@@ -1,0 +1,23 @@
+<!-- verify_code.html -->
+{% extends 'users/base.html' %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Введите код подтверждения</h5>
+                <form action="{% url 'users:verify_code' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="phone_number" value="{{ request.session.phone_number }}">
+                    <div class="form-group">
+                        <label for="codeInput">Код подтверждения</label>
+                        <input type="text" class="form-control" id="codeInput" name="verification_code" placeholder="Код подтверждения" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Подтвердить</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

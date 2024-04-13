@@ -1,0 +1,21 @@
+{% extends 'users/base.html' %}
+
+{% block title %}
+    Профиль пользователя
+{% endblock %}
+
+{% block content %}
+    <h2>Профиль пользователя</h2>
+    <p>Номер телефона: {{ user.phone }}</p>
+    <p>Инвайт-код: {{ user.invite_code }}</p>
+    <p>Активированный инвайт-код: {{ user.activated_invite_code }}</p>
+    <p>Реферал: {{ user.ref_user.phone if user.ref_user else "Нет" }}</p>
+
+    <!-- Форма для редактирования профиля -->
+    <form method="post">
+        {% csrf_token %}
+        {{ profile_form.as_p }}
+
+        <button type="submit">Сохранить</button>
+    </form>
+{% endblock %}

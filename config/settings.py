@@ -139,20 +139,26 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Настройки JWT-токенов
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ],
-}
-
-# Настройки срока действия токенов
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=25),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
-}
+# # Настройки JWT-токенов
+# REST_FRAMEWORK = {
+#     'DEFAULT_AUTHENTICATION_CLASSES': [
+#         'rest_framework_simplejwt.authentication.JWTAuthentication',
+#     ],
+# }
+#
+# # Настройки срока действия токенов
+# SIMPLE_JWT = {
+#     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=25),
+#     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+# }
 
 AUTH_USER_MODEL = 'users.User'
 
 # Допустимое время жизни кода подтверждения в секундах (например, 5 минут)
 VERIFICATION_CODE_EXPIRATION_TIME = 60  # 60 секунд = 1 минута
+
+# Настройка движка сессий
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+
+# Настройка времени жизни сессионных кук
+SESSION_COOKIE_AGE = 3600  # Время жизни сессионных кук в секундах (здесь 3600 секунд = 1 час)
