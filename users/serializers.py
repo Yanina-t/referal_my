@@ -4,23 +4,15 @@ from users.models import User
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
-    """Сериализатор для профиля пользователя."""
     class Meta:
         model = User
         fields = ['id', 'phone', 'first_name', 'last_name', 'email', 'avatar']
 
 
 class ReferralSerializer(serializers.ModelSerializer):
-    """Сериализатор для данных о рефералах."""
     class Meta:
         model = User
         fields = ['id', 'phone', 'first_name', 'last_name']
-
-    def to_representation(self, instance):
-        """Переопределение метода to_representation для представления данных о реферале."""
-        data = super().to_representation(instance)
-        data['name'] = f"{instance.first_name} {instance.last_name}"
-        return data
 
 
 class PhoneAuthSerializer(serializers.Serializer):

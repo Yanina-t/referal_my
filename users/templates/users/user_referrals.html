@@ -1,0 +1,38 @@
+<!-- user_referrals.html -->
+
+{% extends 'users/base.html' %}
+{% load static %}
+
+{% block title %}
+    Рефералы пользователя
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-12">
+            <h2>Рефералы пользователя</h2>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Имя</th>
+                        <th scope="col">Телефон</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for referral in referrals %}
+                        <tr>
+                            <td>{{ referral.first_name }} {{ referral.last_name }}</td>
+                            <td>{{ referral.phone }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="2">У этого пользователя пока нет рефералов.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

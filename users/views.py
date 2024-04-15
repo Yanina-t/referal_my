@@ -20,6 +20,7 @@ from django.contrib import messages
 from django.contrib.messages import constants as messages_constants
 from rest_framework.renderers import TemplateHTMLRenderer
 
+
 class HomePageView(View):
     def get(self, request):
         return render(request, 'users/home.html')
@@ -32,11 +33,8 @@ class UserProfileAPIView(APIView):
     def get(self, request):
         user = request.user
 
-        # Создаем экземпляр ReferralListView для получения списка рефералов
-        referral_list_view = ReferralListView()
-
-        # Получаем список рефералов текущего пользователя, используя метод get_queryset() ReferralListView
-        referral_users = referral_list_view.get_queryset().filter(ref_user=user)
+        # Получаем список рефералов текущего пользователя
+        referral_users = self.get_referral_users(user)
 
         # Создаем сериализатор для списка рефералов
         referral_serializer = UserProfileSerializer(referral_users, many=True)
@@ -53,19 +51,24 @@ class UserProfileAPIView(APIView):
 
         return Response(context, template_name=self.template_name)
 
-
-class ReferralListView(generics.ListAPIView):
-    """Представление для вывода списка рефералов пользователя."""
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        # Получаем текущего пользователя из аутентифицированного запроса
-        user = self.request.user
-
+    def get_referral_users(self, user):
         # Фильтруем пользователей по полю ref_user_id, где текущий пользователь является реферером
         referral_users = User.objects.filter(ref_user_id=user.id)
-
         return referral_users
+
+#
+# class ReferralListView(generics.ListAPIView):
+#     """Представление для вывода списка рефералов пользователя."""
+#     permission_classes = [IsAuthenticated]
+#
+#     def get_queryset(self):
+#         # Получаем текущего пользователя из аутентифицированного запроса
+#         user = self.request.user
+#
+#         # Фильтруем пользователей по полю ref_user_id, где текущий пользователь является реферером
+#         referral_users = User.objects.filter(ref_user_id=user.id)
+#
+#         return referral_users
 
 
 class PhoneAuthAPIView(APIView):

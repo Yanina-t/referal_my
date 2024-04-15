@@ -4,7 +4,7 @@ from users.views import (
     PhoneAuthAPIView,
     VerifyCodeAPIView,
     UserProfileAPIView,
-    ReferralListView, HomePageView,
+    HomePageView,
 )
 
 app_name = 'users'
@@ -14,5 +14,4 @@ urlpatterns = [
     path('phone-auth/', PhoneAuthAPIView.as_view(), name='phone_auth'),
     path('verify-code/', VerifyCodeAPIView.as_view(), name='verify_code'),
     path('user-profile/', UserProfileAPIView.as_view(), name='user_profile'),
-    path('user-referrals/', ReferralListView.as_view(), name='user_referrals'),
 ]
