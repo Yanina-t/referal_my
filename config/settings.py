@@ -157,8 +157,9 @@ AUTH_USER_MODEL = 'users.User'
 # Допустимое время жизни кода подтверждения в секундах (например, 5 минут)
 VERIFICATION_CODE_EXPIRATION_TIME = 60  # 60 секунд = 1 минута
 
-# Настройка движка сессий
-SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+# settings.py
 
-# Настройка времени жизни сессионных кук
-SESSION_COOKIE_AGE = 3600  # Время жизни сессионных кук в секундах (здесь 3600 секунд = 1 час)
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # Используйте базу данных для хранения сессий
+SESSION_COOKIE_NAME = 'my_session_cookie'
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False  # Сессия не истекает при закрытии браузера
+SESSION_SAVE_EVERY_REQUEST = True  # Сохранять сессию на каждый запрос

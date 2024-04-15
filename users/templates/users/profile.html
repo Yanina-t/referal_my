@@ -1,0 +1,78 @@
+<!-- profile.html -->
+{% extends 'users/base.html' %}
+{% load static %}
+
+{% block title %}
+    Профиль пользователя
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Профиль пользователя</h2>
+                <div>
+                    <a href="{% url 'users:user_profile' %}" class="btn btn-secondary">Редактировать профиль</a>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                {% if user.phone %}
+                    <p><strong>Номер телефона:</strong> {{ user.phone }}</p>
+                {% endif %}
+                {% if user.invite_code %}
+                    <p><strong>Ваш инвайт-код:</strong> {{ user.invite_code }}</p>
+                    <small>Поделитесь этим кодом с друзьями, чтобы они присоединились к системе.</small>
+                {% endif %}
+                {% if user.activated_invite_code %}
+                    <p><strong>Активированный чужой инвайт-код:</strong> {{ user.activated_invite_code }}</p>
+                {% else %}
+                    <!-- Показываем форму для ввода чужого инвайт-кода только если инвайт-код не был активирован -->
+                    <form method="post" action="{% url 'users:activate_invite_code' %}">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="inviteCodeInput">Введите чужой инвайт-код:</label>
+                            <input type="text" class="form-control" id="inviteCodeInput" name="invite_code">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Активировать</button>
+                    </form>
+                {% endif %}
+            </div>
+<!-- Ссылка для просмотра рефералов -->
+            <a href="{% url 'users:user_referrals' %}" class="btn btn-secondary">Посмотреть рефералов</a>
+
+
+            <!-- Список рефералов -->
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-12">
+            <h3>Ваши рефералы:</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Имя</th>
+                        <th scope="col">Телефон</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for referral in referrals %}
+                        <tr>
+                            <td>{{ referral.name }}</td>
+                            <td>{{ referral.phone }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="2">Нет рефералов</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <small>Здесь отображаются ваши рефералы, которые присоединились с вашим инвайт-кодом.</small>
+        </div>
+    </div>
+</div>
+        </div>
+    </div>
+</div>
+{% endblock %}

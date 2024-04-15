@@ -12,8 +12,8 @@ class User(AbstractUser):  # models.Model
     username = None
     phone = models.CharField(max_length=12, unique=True, verbose_name='Номер телефона')
     invite_code = models.CharField(max_length=6, unique=True, verbose_name='Инвайт-код пользователя')
-    activated_invite_code = models.CharField(max_length=6, unique=True, **NULLABLE,
-                                             verbose_name='Активированный инвайт-код')
+    activated_invite_code = models.CharField(max_length=6, **NULLABLE,
+                                             verbose_name='Чужой инвайт-код')
     ref_user = models.ForeignKey('self', **NULLABLE, on_delete=models.CASCADE, verbose_name='Реферал')
     first_name = models.CharField(max_length=50, **NULLABLE, verbose_name='Имя пользователя')
     last_name = models.CharField(max_length=100, **NULLABLE, verbose_name='Фамилия пользователя')

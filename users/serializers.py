@@ -5,21 +5,22 @@ from users.models import User
 
 class UserProfileSerializer(serializers.ModelSerializer):
     """Сериализатор для профиля пользователя."""
-    invite_code = serializers.CharField(write_only=True)
-
     class Meta:
         model = User
-        fields = ['id', 'phone', 'invite_code']
+        fields = ['id', 'phone', 'first_name', 'last_name', 'email', 'avatar']
 
-    def update(self, instance, validated_data):
-        """Обновляет профиль пользователя при активации инвайт-кода."""
-        invite_code = validated_data.get('invite_code')
-        if invite_code and not instance.ref_user:
-            ref_user = User.objects.filter(invite_code=invite_code).first()
-            if ref_user:
-                instance.ref_user = ref_user
-                instance.save()
-        return instance
+
+class ReferralSerializer(serializers.ModelSerializer):
+    """Сериализатор для данных о рефералах."""
+    class Meta:
+        model = User
+        fields = ['id', 'phone', 'first_name', 'last_name']
+
+    def to_representation(self, instance):
+        """Переопределение метода to_representation для представления данных о реферале."""
+        data = super().to_representation(instance)
+        data['name'] = f"{instance.first_name} {instance.last_name}"
+        return data
 
 
 class PhoneAuthSerializer(serializers.Serializer):
@@ -43,3 +44,7 @@ class VerifyCodeSerializer(serializers.Serializer):
         return value
 
 
+class ProfileEditSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email', 'avatar']

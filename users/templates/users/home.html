@@ -1,14 +1,61 @@
 <!--home.html-->
 {% extends 'users/base.html' %}
+
 {% block content %}
-<div class="row">
-    <div class="col-md-6 offset-md-3">
-        <h2>Получите уникальные бонусы!</h2>
-        <p>Для начала введите свой номер телефона:</p>
-        <form action="{% url 'users:phone_auth' %}">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-primary" onclick="window.location.href='{% url 'users:phone_auth' %}'">Получить мои бонусы!!</button>
-        </form>
+{% load static %}
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-4 section">
+      <!-- Центрируем только изображение, оставляя текст слева -->
+      <img class="rounded-image mx-auto d-block" src="{% static 'img/istockphoto-646876154-612x612.jpg' %}" alt="Generic placeholder image" width="140" height="140">
+      <h2>Как это работает:</h2>
+      <p>1. Получите уникальный френд-код в вашем профиле.</p>
+      <p>2. Поделитесь френд-кодом с друзьями.</p>
+      <p>3. Ваши бонусы начисляются после успешной регистрации и активного использования вашим другом платформы.</p>
+    </div>
+
+    <div class="col-lg-4 section">
+      <img class="rounded-image mx-auto d-block" src="{% static 'img/istockphoto-1462652403-612x612.jpg' %}" alt="Generic placeholder image" width="140" height="140">
+      <h2>Преимущества для вас:</h2>
+      <p>• Получайте бонусы за каждого привлеченного друга.</p>
+      <p>• Эксклюзивные предложения для вас и ваших друзей.</p>
+      <p>• Больше друзей - больше преимуществ!</p>
+    </div>
+
+    <div class="col-lg-4 section">
+      <img class="rounded-image mx-auto d-block" src="{% static 'img/teamwork-3213924_640.jpg' %}" alt="Generic placeholder image" width="140" height="140">
+      <h2>Как начать:</h2>
+      <p>• Найдите френд-код в разделе "Пригласить друзей".</p>
+      <p>• Поделитесь кодом через соцсети или мессенджеры.</p>
+      <p>• Убедитесь, что друг использовал ваш френд-код при регистрации.</p>
     </div>
 </div>
+
+<div class="py-5 text-center">
+  <img class="mx-auto d-block" src="{% static 'img/istockphoto-646876154-612x612.jpg' %}" alt="Generic placeholder image" width="200" height="150">
+  <h2>Условия программы:</h2>
+  <p>• Друзья должны использовать ваш френд-код при регистрации.</p>
+  <p>• Бонусы начисляются после успешной регистрации друга.</p>
+  <p>• Преимущества могут быть использованы согласно правилам программы.</p>
+</div>
+
+</div>
+<div class="py-5 text-center">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title">Заходи в свой профиль, чтобы получить бонус!</h2>
+                <p class="card-text">
+                    <p>Присоединяйтесь к нашей реферальной программе прямо сейчас!<p>
+                    <p>Уникальные возможности, призы и преимущества ждут вас.<p>
+                    <p>Не упустите свой шанс!<p>
+                </p>
+                <a href="{% url 'users:phone_auth' %}" class="btn btn-primary">Зарегистрироваться</a>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
+

@@ -16,22 +16,35 @@ def generate_invite_code():
 
 
 def activate_invite_code(current_user, invite_code):
-    """Активирует инвайт-код для пользователя, если он еще не использован."""
-    # Найти пользователя, связанного с инвайт-кодом
-    ref_user = User.objects.filter(invite_code=invite_code).first()
+    try:
+        # Находим пользователя, которому принадлежит инвайт-код
+        user_to_activate = User.objects.get(invite_code=invite_code)
 
-    if ref_user:
-        # Проверить, что у текущего пользователя нет активированного инвайт-кода
-        if not current_user.invite_code_used:
-            # Присвоить текущему пользователю реферера
-            current_user.ref_user = ref_user
-            current_user.invite_code_used = True
+        # Проверяем, что инвайт-код принадлежит другому пользователю
+        if user_to_activate != current_user:
+            # Проверяем, не активировал ли текущий пользователь уже другой инвайт-код
+            if current_user.activated_invite_code:
+                return False  # Уже активировал другой инвайт-код
+
+            # Обновляем поле ref_user_id текущего пользователя id пользователем, который прислал приглашение
+            current_user.ref_user_id = user_to_activate.id
             current_user.save()
+
+            # Помечаем инвайт-код как активированный, устанавливая его в поле activated_invite_code у текущего пользователя
+            current_user.activated_invite_code = invite_code
+            current_user.save()
+
             return True
         else:
-            return False  # Уже активирован инвайт-код у текущего пользователя
-    else:
-        return False  # Инвайт-код не найден или уже использован
+            # Если инвайт-код принадлежит текущему пользователю, возвращаем False
+            return False
+    except User.DoesNotExist:
+        # Если инвайт-код не найден, возвращаем False
+        return False
+
+
+
+
 
 
 def send_verification_code(phone_number):

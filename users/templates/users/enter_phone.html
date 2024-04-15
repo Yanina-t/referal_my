@@ -1,20 +1,25 @@
 <!-- enter_phone.html -->
 
 {% extends 'users/base.html' %}
+
 {% block content %}
-<div class="row">
-    <div class="col-md-6 offset-md-3">
-        <h2>Получите уникальные бонусы!</h2>
-        <p>Присоединяйтесь к нам и получите уникальные бонусы, введя свой номер телефона. Мы отправим вам код для подтверждения.</p>
-        <form method="post" action="{% url 'users:phone_auth' %}">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="phoneInput">Введите ваш номер телефона:</label>
-                <input type="text" class="form-control" id="phoneInput" name="phone" placeholder="Номер телефона" required>
-                <small id="phoneHelp" class="form-text text-muted">Мы обещаем, что ваш номер телефона останется только с нами! 📱</small>
-            </div>
-            <button type="submit" class="btn btn-primary">Хочу свои бонусы!</button>
-        </form>
+{% load static %}
+<div class="container">
+  <div class="row">
+    <div class="col-md-6 offset-md-3 text-center">
+      <h2>Присоединяйтесь прямо сейчас!</h2>
+      <p>Введите ваш номер телефона (без пробелов и дефисов):</p>
+      <form method="post" action="{% url 'users:phone_auth' %}" class="form-container">
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="phoneInput">Номер телефона:</label>
+          <input type="text" class="form-control" id="phoneInput" name="phone" placeholder="Например, 375291234567" required pattern="[0-9]{12}">
+          <small id="phoneHelp" class="form-text text-muted">Мы отправим вам SMS-код для подтверждения номера телефона.</small>
+        </div>
+        <button type="submit" class="submit-btn">Отправить SMS-код</button>
+      </form>
     </div>
+  </div>
 </div>
+
 {% endblock %}
