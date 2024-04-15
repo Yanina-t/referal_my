@@ -6,18 +6,25 @@
         <div class="card">
             <div class="card-body">
                 <h5 class="card-title">Введите код подтверждения</h5>
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-danger">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
                 <form action="{% url 'users:verify_code' %}" method="post">
                     {% csrf_token %}
                     <input type="hidden" name="phone_number" value="{{ request.session.phone_number }}">
                     <div class="form-group">
                         <label for="codeInput">Код подтверждения</label>
-                        <input type="text" class="form-control" id="codeInput" name="verification_code" placeholder="Код подтверждения" required>
+                        <input type="text" class="form-control" id="codeInput" name="verification_code" placeholder="Код подтверждения" required pattern="[0-9]{4}">
                     </div>
                     <button type="submit" class="btn btn-primary">Подтвердить</button>
+                    <a href="{% url 'users:phone_auth' %}" class="btn btn-link">Запросить новый код</a>
                 </form>
             </div>
         </div>
     </div>
 </div>
 {% endblock %}
-

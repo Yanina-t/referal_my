@@ -1,23 +1,19 @@
 # views.py
-from django.contrib.auth import authenticate, login
-from django.http import JsonResponse, HttpResponseRedirect, HttpResponseNotAllowed, HttpResponseBadRequest
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render, redirect
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.views import View
-from django.views.generic import TemplateView
-from rest_framework.generics import get_object_or_404, RetrieveAPIView
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
 from users.models import User, UserCode
-from .serializers import PhoneAuthSerializer, UserProfileSerializer, VerifyCodeSerializer, ProfileEditSerializer, \
-    ReferralSerializer
+from .forms import ProfileForm
+from .serializers import PhoneAuthSerializer, UserProfileSerializer, VerifyCodeSerializer, ProfileEditSerializer
 from .utils import create_user_with_verification_code, activate_invite_code
-from rest_framework import generics
 from django.contrib import messages
-from django.contrib.messages import constants as messages_constants
 from rest_framework.renderers import TemplateHTMLRenderer
 
 
@@ -61,19 +57,17 @@ class UserProfileAPIView(APIView):
         referral_users = User.objects.filter(ref_user_id=user.id)
         return referral_users
 
-#
-# class ReferralListView(generics.ListAPIView):
-#     """Представление для вывода списка рефералов пользователя."""
-#     permission_classes = [IsAuthenticated]
-#
-#     def get_queryset(self):
-#         # Получаем текущего пользователя из аутентифицированного запроса
-#         user = self.request.user
-#
-#         # Фильтруем пользователей по полю ref_user_id, где текущий пользователь является реферером
-#         referral_users = User.objects.filter(ref_user_id=user.id)
-#
-#         return referral_users
+@login_required
+def edit_profile_view(request):
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect('users:user_profile')  # Перенаправление на страницу профиля после сохранения
+    else:
+        form = ProfileForm(instance=request.user)
+
+    return render(request, 'users/edit_profile.html', {'form': form})
 
 
 class PhoneAuthAPIView(APIView):
@@ -100,20 +94,16 @@ class PhoneAuthAPIView(APIView):
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        # Выводим SMS-код в консоль для проверки
-        print(f'Отправлен SMS-код на номер {phone_number}: {user_code.sms_code}')
-
         # Устанавливаем сессию для пользователя
         login(request, user)
 
         # Перенаправляем пользователя на страницу ввода SMS-кода
         return redirect('users:verify_code')
 
-        # return Response({'phone_number': phone_number, 'verification_code': user_code.sms_code, 'message': f'Код подтверждения отправлен на номер {phone_number}'}, status=status.HTTP_200_OK)
-
 
 class VerifyCodeAPIView(APIView):
     """API-представление для проверки кода подтверждения."""
+
     def get(self, request):
         # Показать форму ввода кода подтверждения
         context = {}
@@ -122,46 +112,39 @@ class VerifyCodeAPIView(APIView):
     def post(self, request):
         serializer = VerifyCodeSerializer(data=request.data)
         if serializer.is_valid():
-            phone_number = request.session.get('phone_number') # Получаем номер из сессии
+            phone_number = request.session.get('phone_number')  # Получаем номер из сессии
             verification_code = serializer.validated_data.get('verification_code')
 
-            # Далее логика для проверки кода подтверждения
-            print(f"Phone number: {phone_number}, Verification code: {verification_code}")
-
             if phone_number and verification_code:
-                # Найдите пользователя по номеру телефона
                 user = User.objects.filter(phone=phone_number).first()
 
                 if not user:
-                    return Response({'error': 'Пользователь не найден'}, status=status.HTTP_404_NOT_FOUND)
+                    messages.error(request, 'Пользователь не найден')
+                    return redirect('users:phone_auth')  # Перенаправляем на страницу запроса нового кода
 
-                # Найдите последний сохраненный код подтверждения для данного пользователя
                 user_code = UserCode.objects.filter(user=user).order_by('-created_at').first()
 
-                if not user_code:
-                    return Response({'error': 'Код подтверждения не найден'}, status=status.HTTP_404_NOT_FOUND)
+                if not user_code or str(user_code.sms_code) != str(verification_code):
+                    messages.error(request, 'Неверный код подтверждения')
+                    return redirect('users:verify_code')
 
-                # Сравните коды
-                if str(user_code.sms_code) == str(verification_code):
-                    # Удалите использованный код подтверждения
-                    user_code.delete()
+                user_code.delete()  # Удаляем использованный код подтверждения
+                user.is_authenticated = True
+                user.save()
+                authenticated_user = authenticate(request, phone=phone_number)
 
-                    # Обновите статус аутентификации пользователя
-                    # user.is_authenticated = True
-                    # user.save()
-                    user = authenticate(request, phone=phone_number)
-                    if user:
-                        login(request, user)
-
-                    # return Response({'message': 'Аутентификация успешна'}, status=status.HTTP_200_OK)
+                if authenticated_user:
+                    login(request, authenticated_user)
+                    messages.success(request, 'Вы успешно аутентифицированы!')
                     return redirect('users:user_profile')
                 else:
-                    return Response({'error': 'Неверный код подтверждения'}, status=status.HTTP_400_BAD_REQUEST)
+                    messages.error(request, 'Ошибка аутентификации')
+                    return redirect('users:phone_auth')
             else:
-                return Response({'error': 'Укажите номер телефона и код подтверждения'},
-                                status=status.HTTP_400_BAD_REQUEST)
+                messages.error(request, 'Укажите номер телефона и код подтверждения')
+                return redirect('users:verify_code')
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return HttpResponseBadRequest('Неверные данные в запросе')
 
 
 def activate_invite_code_view(request):
@@ -173,9 +156,6 @@ def activate_invite_code_view(request):
             # Если инвайт-код не указан, отправляем сообщение об ошибке
             messages.error(request, "Инвайт-код не указан")
             return HttpResponseBadRequest("Инвайт-код не указан")
-
-        print(f"Полученный invite_code: {invite_code}")
-        print(f"Текущий пользователь: {current_user}")
 
         # Попытка активировать инвайт-код
         activated = activate_invite_code(current_user, invite_code)
@@ -194,7 +174,21 @@ def activate_invite_code_view(request):
     return HttpResponseBadRequest("Метод запроса не поддерживается")
 
 
+class LogoutView(View):
+    def get(self, request):
+        # Обработка GET запроса (например, для перехода на страницу выхода)
+        return redirect(reverse_lazy('users:home'))  # Перенаправление на главную страницу
 
+    def post(self, request):
+        if request.user.is_authenticated:
+            # Установка атрибута is_authenticated на False
+            request.user.is_authenticated = False
+            request.user.save()  # Сохранение изменений
+            logout(request)  # Выход пользователя из системы
+            return redirect('users:home')  # Перенаправление на на главную страницу
+        else:
+            # Если пользователь не был аутентифицирован, перенаправляем на главную страницу
+            return redirect('users:home')
 
 
 

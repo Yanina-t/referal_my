@@ -1,35 +1,31 @@
 <!-- navbar.html -->
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
+        <a class="navbar-brand" href="{% url 'users:home' %}">Главная</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item active">
-                <a class="nav-link" href="{% url 'users:home' %}">Главная <span class="sr-only">(current)</span></a>
-            </li>
-
-            {% if user.is_authenticated %}
-                {% if request.path == '/user-profile/' %}
-                    <!-- Если пользователь аутентифицирован и находится на странице профиля -->
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ml-auto">
+                {% if user.is_authenticated %}
+                    <!-- Если пользователь аутентифицирован, показываем ссылки на профиль и кнопку выхода -->
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'users:user_profile' %}">Профиль</a>
                     </li>
+                    <li class="nav-item">
+                        <form action="{% url 'users:logout' %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-link nav-link">Выход</button>
+                        </form>
+                    </li>
+                {% else %}
+                    <!-- Если пользователь не аутентифицирован, показываем ссылку на вход -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'users:phone_auth' %}">Вход</a>
+                    </li>
                 {% endif %}
-
-                <!-- Кнопка выхода для аутентифицированного пользователя -->
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'users:logout' %}">Выход</a>
-                </li>
-            {% else %}
-                <!-- Кнопка входа для неаутентифицированного пользователя -->
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'users:phone_auth' %}">Вход</a>
-                </li>
-            {% endif %}
-        </ul>
-    </div>
-</nav>
+            </ul>
+        </div>
+    </nav>
