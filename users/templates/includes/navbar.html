@@ -11,9 +11,25 @@
             <li class="nav-item active">
                 <a class="nav-link" href="{% url 'users:home' %}">Главная <span class="sr-only">(current)</span></a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'users:user_profile' %}">Профиль</a>
-            </li>
+
+            {% if user.is_authenticated %}
+                {% if request.path == '/user-profile/' %}
+                    <!-- Если пользователь аутентифицирован и находится на странице профиля -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'users:user_profile' %}">Профиль</a>
+                    </li>
+                {% endif %}
+
+                <!-- Кнопка выхода для аутентифицированного пользователя -->
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'users:logout' %}">Выход</a>
+                </li>
+            {% else %}
+                <!-- Кнопка входа для неаутентифицированного пользователя -->
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'users:phone_auth' %}">Вход</a>
+                </li>
+            {% endif %}
         </ul>
     </div>
 </nav>

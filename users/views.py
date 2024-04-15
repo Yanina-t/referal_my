@@ -31,25 +31,30 @@ class UserProfileAPIView(APIView):
     template_name = 'users/profile.html'
 
     def get(self, request):
-        user = request.user
+        # Проверяем аутентификацию пользователя
+        if request.user.is_authenticated:
+            user = request.user
 
-        # Получаем список рефералов текущего пользователя
-        referral_users = self.get_referral_users(user)
+            # Получаем список рефералов текущего пользователя
+            referral_users = self.get_referral_users(user)
 
-        # Создаем сериализатор для списка рефералов
-        referral_serializer = UserProfileSerializer(referral_users, many=True)
+            # Создаем сериализатор для списка рефералов
+            referral_serializer = UserProfileSerializer(referral_users, many=True)
 
-        # Создаем сериализатор для данных пользователя
-        user_serializer = ProfileEditSerializer(instance=user)
+            # Создаем сериализатор для данных пользователя
+            user_serializer = ProfileEditSerializer(instance=user)
 
-        # Передаем список рефералов и данные пользователя в контекст шаблона
-        context = {
-            'user': user,
-            'referrals': referral_serializer.data,
-            'serializer': user_serializer
-        }
+            # Передаем список рефералов и данные пользователя в контекст шаблона
+            context = {
+                'user': user,
+                'referrals': referral_serializer.data,
+                'serializer': user_serializer
+            }
 
-        return Response(context, template_name=self.template_name)
+            return Response(context, template_name=self.template_name)
+        else:
+            # Если пользователь не аутентифицирован, перенаправляем его на страницу входа
+            return redirect('users:phone_auth')
 
     def get_referral_users(self, user):
         # Фильтруем пользователей по полю ref_user_id, где текущий пользователь является реферером
@@ -115,14 +120,12 @@ class VerifyCodeAPIView(APIView):
         return render(request, 'users/verify_code.html', context)
 
     def post(self, request):
-        # Выводим содержимое запроса в консоль
-        print(f"POST request data: {request.data}")
         serializer = VerifyCodeSerializer(data=request.data)
         if serializer.is_valid():
             phone_number = request.session.get('phone_number') # Получаем номер из сессии
             verification_code = serializer.validated_data.get('verification_code')
 
-            # Далее ваша логика для проверки кода подтверждения
+            # Далее логика для проверки кода подтверждения
             print(f"Phone number: {phone_number}, Verification code: {verification_code}")
 
             if phone_number and verification_code:
