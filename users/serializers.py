@@ -30,11 +30,6 @@ class VerifyCodeSerializer(serializers.Serializer):
     phone_number = serializers.CharField(max_length=12)
     verification_code = serializers.CharField(max_length=4)
 
-    def validate_phone_number(self, value):
-        if not value.isdigit():
-            raise serializers.ValidationError("Номер телефона должен содержать только цифры.")
-        return value
-
 
 class ProfileEditSerializer(serializers.ModelSerializer):
     class Meta:

@@ -3,7 +3,7 @@
 {% load static %}
 
 {% block title %}
-    Личный кабинет - {{ user.first_name }} ({{ user.phone }})
+Личный кабинет - {{ user.first_name }} ({{ user.phone }})
 {% endblock %}
 
 {% block content %}
@@ -11,11 +11,14 @@
     <div class="row">
         <div class="col-md-3">
             {% if user.avatar %}
-                <img src="{{ user.avatar.url }}" alt="Аватар пользователя" class="img-fluid">
+            <img src="{{ user.avatar.url }}" alt="Аватар пользователя" class="img-fluid rounded-circle"
+                 style="width: 200px; height: 200px;">
             {% else %}
-                <img src="{% static 'img/default_avatar.jpg' %}" alt="Аватар пользователя" class="img-fluid">
+            <img src="{% static 'default_avatars/default_avatars.jpg' %}" alt="Аватар пользователя" class="img-fluid rounded-circle"
+                 style="width: 200px; height: 200px;">
             {% endif %}
         </div>
+
         <div class="col-md-12">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2>Личный кабинет</h2>
@@ -29,57 +32,68 @@
                 <p><strong>Имя:</strong> {{ user.first_name }}</p>
                 <p><strong>Фамилия:</strong> {{ user.last_name }}</p>
                 {% if user.invite_code %}
-                    <div class="mb-2" id="friendCodeContainer">
-                        <p class="mb-0"><strong>Ваш френд-код:</strong> <span class="btn p-0" title='Скопировать' id="friendCodeValue">{{ user.invite_code }}</span></p>
-                        <small>*Поделитесь этим кодом с друзьями и получите приятные бонусы.</small>
-                    </div>
+                <div class="mb-2" id="friendCodeContainer">
+                    <p class="mb-0"><strong>Ваш френд-код:</strong> <span class="btn p-0" title='Скопировать'
+                                                                          id="friendCodeValue">{{user.invite_code}}</span>
+                    </p>
+                    <small>*Поделитесь этим кодом с друзьями и получите приятные бонусы.</small>
+                </div>
                 {% endif %}
                 {% if user.activated_invite_code %}
                 <div class="mt-4">
-                    <p><strong>Френд-код друга, который вы успешно активировали:</strong> {{ user.activated_invite_code }}</p>
+                    <p><strong>Френд-код друга, который вы успешно активировали:</strong> {{ user.activated_invite_code
+                        }}</p>
                 </div>
                 {% else %}
-                    <!-- Показываем форму для ввода чужого инвайт-кода только если инвайт-код не был активирован -->
-                    <form method="post" action="{% url 'users:activate_invite_code' %}">
-                        {% csrf_token %}
-                        <div class="form-group">
-                            <label for="inviteCodeInput">Введите френд-код вашего друга:</label>
-                            <input type="text" class="form-control" id="inviteCodeInput" name="invite_code">
-                        </div>
-                        <button type="submit" class="btn btn-primary">Активировать</button>
-                    </form>
+                <!-- Показываем форму для ввода чужого инвайт-кода только если инвайт-код не был активирован -->
+                <!-- Отображение сообщений об ошибках -->
+                {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-danger">
+                    {{ message }}
+                </div>
+                {% endfor %}
+                {% endif %}
+                <form method="post" action="{% url 'users:activate_invite_code' %}">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="inviteCodeInput">Введите френд-код вашего друга:</label>
+                        <input type="text" class="form-control" id="inviteCodeInput" name="invite_code">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Активировать</button>
+                </form>
                 {% endif %}
             </div>
 
             <!-- Список рефералов -->
-<div class="container mt-5">
-    <div class="row">
-        <div class="col-md-12">
-            <h3>Ваши друзья:</h3>
-            <!-- Итоговое количество рефералов -->
-            <p>Всего друзей использовало ваш френд-код: {{ referrals|length }}</p>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th scope="col">Телефон</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for referral in referrals %}
-                        <tr>
-                            <td>{{ referral.phone }}</td>
-                        </tr>
-                    {% empty %}
-                        <tr>
-                            <td colspan="2">У вас пока нет друзей</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            <small>*Здесь отображаются ваши друзья, которые присоединились с вашим френд-кодом.</small>
-        </div>
-    </div>
-</div>
+            <div class="container mt-5">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h3>Ваши друзья:</h3>
+                        <!-- Итоговое количество рефералов -->
+                        <p>Всего друзей использовало ваш френд-код: {{ referrals|length }}</p>
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th scope="col">Телефон</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for referral in referrals %}
+                            <tr>
+                                <td>{{ referral.phone }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="2">У вас пока нет друзей</td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                        <small>*Здесь отображаются ваши друзья, которые присоединились с вашим френд-кодом.</small>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -106,7 +120,6 @@
         }
     });
 </script>
-
 
 
 {% endblock %}

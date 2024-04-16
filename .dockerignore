@@ -1,0 +1,38 @@
+# Ignored
+*/temp*
+*/*/temp*
+temp?
+__pycache__
+*.pyc
+
+.pytest_cache
+.vscode
+.git
+.gitignore
+.svn
+
+db.sqlite3
+media
+static
+.venv
+
+tests
+docs
+migrations
+.coverage
+
+# Исключаем файлы настроек редакторов
+*.swp
+*.swo
+
+# Исключаем файлы логов и временных файлов
+*.log
+*.tmp
+
+# Исключаем файлы настроек и временные файлы для различных инструментов и библиотек
+node_modules/
+bower_components/
+*.lock
+*.pyo
+*.pyd
+*.db

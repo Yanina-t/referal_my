@@ -1,5 +1,5 @@
 # views.py
-from django.contrib.auth import logout, login
+from django.contrib.auth import logout, login, authenticate
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render, redirect
@@ -9,13 +9,12 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from users.models import User, UserCode
+from users.models import User
 from .forms import ProfileForm
 from .serializers import PhoneAuthSerializer, UserProfileSerializer, VerifyCodeSerializer, ProfileEditSerializer
 from .utils import create_user_with_verification_code, activate_invite_code
 from django.contrib import messages
 from rest_framework.renderers import TemplateHTMLRenderer
-from users.custom_auth import PhoneCodeAuthBackend
 
 
 class HomePageView(View):
@@ -58,6 +57,7 @@ class UserProfileAPIView(APIView):
         referral_users = User.objects.filter(ref_user_id=user.id)
         return referral_users
 
+
 @login_required
 def edit_profile_view(request):
     if request.method == 'POST':
@@ -68,7 +68,7 @@ def edit_profile_view(request):
     else:
         form = ProfileForm(instance=request.user)
 
-    return render(request, 'users/edit_profile.html', {'form': form})
+    return render(request, 'users/editprofile_form.html', {'form': form})
 
 
 class PhoneAuthAPIView(APIView):
@@ -122,14 +122,13 @@ class VerifyCodeAPIView(APIView):
 
                 if self.check_verification_code(user, verification_code):
                     # Если код подтверждения верен, выполнить аутентификацию
-                    auth_backend = PhoneCodeAuthBackend()
-                    authenticated_user = auth_backend.authenticate(request, phone=phone_number,
-                                                                   verification_code=verification_code)
+                    user.is_authenticated = True
+                    user.save()
+
+                    authenticated_user = authenticate(request, phone=phone_number)
 
                     if authenticated_user:
-                        authenticated_user.backend = 'users.custom_auth.PhoneCodeAuthBackend'
-                        login(request, authenticated_user)
-                        messages.success(request, 'Вы успешно аутентифицированы!')
+                        login(request, authenticated_user, backend='users.custom_auth.PhoneCodeAuthBackend')
                         return redirect('users:user_profile')
                     else:
                         messages.error(request, 'Ошибка аутентификации')
@@ -178,13 +177,11 @@ def activate_invite_code_view(request):
         activated = activate_invite_code(current_user, invite_code)
 
         if activated:
-            # Если инвайт-код успешно активирован, отправляем сообщение об успехе и перенаправляем пользователя
-            messages.success(request, "Инвайт-код успешно активирован")
             return HttpResponseRedirect(reverse('users:user_profile'))
         else:
             # Если активация не удалась, отправляем сообщение об ошибке
-            messages.error(request, "Ошибка активации инвайт-кода")
-            return HttpResponseBadRequest("Ошибка активации инвайт-кода")
+            messages.error(request, "Несуществующий или недействительный инвайт-код")
+            return HttpResponseRedirect(reverse('users:user_profile'))
 
     # Если метод запроса не поддерживается (например, GET), отправляем сообщение об ошибке
     messages.error(request, "Метод запроса не поддерживается")
@@ -202,10 +199,7 @@ class LogoutView(View):
             request.user.is_authenticated = False
             request.user.save()  # Сохранение изменений
             logout(request)  # Выход пользователя из системы
-            return redirect('users:home')  # Перенаправление на на главную страницу
+            return redirect('users:home')  # Перенаправление на главную страницу
         else:
             # Если пользователь не был аутентифицирован, перенаправляем на главную страницу
             return redirect('users:home')
-
-
-

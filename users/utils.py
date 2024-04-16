@@ -7,10 +7,18 @@ import time
 import random
 
 
+# def generate_invite_code():
+#     """Генерирует уникальный инвайт-код для пользователя."""
+#     # Генерируем случайный инвайт-код
+#     invite_code = get_random_string(length=6, allowed_chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789')
+#
+#     return invite_code
 def generate_invite_code():
     """Генерирует уникальный инвайт-код для пользователя."""
-    # Генерируем случайный инвайт-код
-    invite_code = get_random_string(length=6, allowed_chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789')
+    while True:
+        invite_code = get_random_string(length=6, allowed_chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789')
+        if not User.objects.filter(invite_code=invite_code).exists():
+            break  # Инвайт-код уникален, выходим из цикла
 
     return invite_code
 
@@ -41,10 +49,6 @@ def activate_invite_code(current_user, invite_code):
     except User.DoesNotExist:
         # Если инвайт-код не найден, возвращаем False
         return False
-
-
-
-
 
 
 def send_verification_code(phone_number):
