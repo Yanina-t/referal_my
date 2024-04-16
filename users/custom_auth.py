@@ -6,18 +6,17 @@ from .models import UserCode
 
 UserModel = get_user_model()
 
+
 class PhoneCodeAuthBackend(ModelBackend):
     """
     Пользовательский бэкенд аутентификации по номеру телефона и коду подтверждения.
     """
-
-    class PhoneCodeAuthBackend(ModelBackend):
-        def authenticate(self, request, **credentials):
-            try:
-                user = UserModel.objects.get(phone=credentials.get('phone'))
-                return user
-            except UserModel.DoesNotExist:
-                return None
+    def authenticate(self, request, **credentials):
+        try:
+            user = UserModel.objects.get(phone=credentials.get('phone'))
+            return user
+        except UserModel.DoesNotExist:
+            return None
 
     # def authenticate(self, request, **credentials):
     #     """
