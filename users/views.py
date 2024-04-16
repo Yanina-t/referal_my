@@ -120,29 +120,48 @@ class VerifyCodeAPIView(APIView):
                     messages.error(request, 'Пользователь не найден')
                     return redirect('users:phone_auth')  # Перенаправляем на страницу запроса нового кода
 
-                user_code = UserCode.objects.filter(user=user).order_by('-created_at').first()
+                if self.check_verification_code(user, verification_code):
+                    # Если код подтверждения верен, выполнить аутентификацию
+                    auth_backend = PhoneCodeAuthBackend()
+                    authenticated_user = auth_backend.authenticate(request, phone=phone_number,
+                                                                   verification_code=verification_code)
 
-                if not user_code or str(user_code.sms_code) != str(verification_code):
+                    if authenticated_user:
+                        authenticated_user.backend = 'users.custom_auth.PhoneCodeAuthBackend'
+                        login(request, authenticated_user)
+                        messages.success(request, 'Вы успешно аутентифицированы!')
+                        return redirect('users:user_profile')
+                    else:
+                        messages.error(request, 'Ошибка аутентификации')
+                        return redirect('users:phone_auth')
+                else:
+                    # Если код подтверждения неверен
                     messages.error(request, 'Неверный код подтверждения')
                     return redirect('users:verify_code')
-
-                auth_backend = PhoneCodeAuthBackend()
-                authenticated_user = auth_backend.authenticate(request, phone=phone_number)
-                user_code.delete()  # Удаляем использованный код подтверждения
-                if authenticated_user:
-                    login(request, authenticated_user) # Устанавливаем пользователя в текущий сеанс
-                    messages.success(request, 'Вы успешно аутентифицированы!')
-                    return redirect('users:user_profile')
-                else:
-                    messages.error(request, 'Ошибка аутентификации')
-                    return redirect('users:phone_auth')
-
-
             else:
                 messages.error(request, 'Укажите номер телефона и код подтверждения')
                 return redirect('users:verify_code')
         else:
             return HttpResponseBadRequest('Неверные данные в запросе')
+
+    def check_verification_code(self, user, verification_code):
+        """
+        Проверка кода подтверждения пользователя.
+
+        Args:
+            user: объект пользователя.
+            verification_code: код подтверждения для проверки.
+
+        Returns:
+            bool: True, если код подтверждения действителен для пользователя, иначе False.
+        """
+        user_code = user.usercode_set.order_by('-created_at').first()
+
+        if user_code and str(user_code.sms_code) == str(verification_code):
+            user_code.delete()  # Удаляем использованный код подтверждения
+            return True
+        else:
+            return False
 
 
 def activate_invite_code_view(request):
