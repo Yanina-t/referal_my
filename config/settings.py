@@ -139,21 +139,14 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# # Настройки JWT-токенов
-# REST_FRAMEWORK = {
-#     'DEFAULT_AUTHENTICATION_CLASSES': [
-#         'rest_framework_simplejwt.authentication.JWTAuthentication',
-#     ],
-# }
-#
-# # Настройки срока действия токенов
-# SIMPLE_JWT = {
-#     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=25),
-#     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
-# }
 
 AUTH_USER_MODEL = 'users.User'
 
+#свой бекенд авторизации по номеру телефона
+AUTHENTICATION_BACKENDS = [
+    'users.custom_auth.PhoneCodeAuthBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
 # Допустимое время жизни кода подтверждения в секундах (например, 5 минут)
 VERIFICATION_CODE_EXPIRATION_TIME = 60  # 60 секунд = 1 минута
 

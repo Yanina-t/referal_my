@@ -1,5 +1,5 @@
 # views.py
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import logout, login
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render, redirect
@@ -15,6 +15,7 @@ from .serializers import PhoneAuthSerializer, UserProfileSerializer, VerifyCodeS
 from .utils import create_user_with_verification_code, activate_invite_code
 from django.contrib import messages
 from rest_framework.renderers import TemplateHTMLRenderer
+from users.custom_auth import PhoneCodeAuthBackend
 
 
 class HomePageView(View):
@@ -94,9 +95,6 @@ class PhoneAuthAPIView(APIView):
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        # Устанавливаем сессию для пользователя
-        login(request, user)
-
         # Перенаправляем пользователя на страницу ввода SMS-кода
         return redirect('users:verify_code')
 
@@ -128,18 +126,18 @@ class VerifyCodeAPIView(APIView):
                     messages.error(request, 'Неверный код подтверждения')
                     return redirect('users:verify_code')
 
+                auth_backend = PhoneCodeAuthBackend()
+                authenticated_user = auth_backend.authenticate(request, phone=phone_number)
                 user_code.delete()  # Удаляем использованный код подтверждения
-                user.is_authenticated = True
-                user.save()
-                authenticated_user = authenticate(request, phone=phone_number)
-
                 if authenticated_user:
-                    login(request, authenticated_user)
+                    login(request, authenticated_user) # Устанавливаем пользователя в текущий сеанс
                     messages.success(request, 'Вы успешно аутентифицированы!')
                     return redirect('users:user_profile')
                 else:
                     messages.error(request, 'Ошибка аутентификации')
                     return redirect('users:phone_auth')
+
+
             else:
                 messages.error(request, 'Укажите номер телефона и код подтверждения')
                 return redirect('users:verify_code')

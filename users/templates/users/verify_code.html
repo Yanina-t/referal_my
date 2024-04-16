@@ -1,11 +1,14 @@
 <!-- verify_code.html -->
 {% extends 'users/base.html' %}
+
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-md-6">
         <div class="card">
             <div class="card-body">
                 <h5 class="card-title">Введите код подтверждения</h5>
+
+                <!-- Отображение сообщений об ошибках -->
                 {% if messages %}
                     {% for message in messages %}
                         <div class="alert alert-danger">
@@ -13,6 +16,8 @@
                         </div>
                     {% endfor %}
                 {% endif %}
+
+                <!-- Форма для ввода кода подтверждения -->
                 <form action="{% url 'users:verify_code' %}" method="post">
                     {% csrf_token %}
                     <input type="hidden" name="phone_number" value="{{ request.session.phone_number }}">
@@ -21,6 +26,8 @@
                         <input type="text" class="form-control" id="codeInput" name="verification_code" placeholder="Код подтверждения" required pattern="[0-9]{4}">
                     </div>
                     <button type="submit" class="btn btn-primary">Подтвердить</button>
+
+                    <!-- Ссылка для запроса нового кода -->
                     <a href="{% url 'users:phone_auth' %}" class="btn btn-link">Запросить новый код</a>
                 </form>
             </div>
