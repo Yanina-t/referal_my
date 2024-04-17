@@ -1,92 +1,22 @@
-[{
-    "model": "users.user",
-    "pk": 57,
-    "fields": {
-      "password": "",
-      "last_login": null,
-      "is_superuser": false,
-      "is_staff": false,
-      "is_active": true,
-      "date_joined": "2024-04-16T17:59:08.554Z",
-      "phone": "987654329651",
-      "invite_code": "L92T4H",
-      "activated_invite_code": null,
-      "ref_user": null,
-      "first_name": null,
-      "last_name": null,
-      "email": null,
-      "avatar": "",
-      "is_authenticated": false,
-      "groups": [],
-      "user_permissions": []
+[
+    {
+        "model": "users.user",
+        "pk": 1,
+        "fields": {
+            "phone": "987644329651",
+            "invite_code": "L4234H",
+            "is_active": true,
+            "date_joined": "2024-04-16T17:59:08.554Z"
+        }
+    },
+    {
+        "model": "users.user",
+        "pk": 2,
+        "fields": {
+            "phone": "986254698515",
+            "invite_code": "L42T4H",
+            "is_active": true,
+            "date_joined": "2024-04-16T17:59:38.466Z"
+        }
     }
-  },
-  {
-    "model": "users.user",
-    "pk": 58,
-    "fields": {
-      "password": "",
-      "last_login": "2024-04-16T18:04:03.021Z",
-      "is_superuser": false,
-      "is_staff": false,
-      "is_active": true,
-      "date_joined": "2024-04-16T17:59:38.466Z",
-      "phone": "986253698515",
-      "invite_code": "OS0EO0",
-      "activated_invite_code": null,
-      "ref_user": null,
-      "first_name": null,
-      "last_name": null,
-      "email": null,
-      "avatar": "",
-      "is_authenticated": false,
-      "groups": [],
-      "user_permissions": []
-    }
-  },
-  {
-    "model": "users.user",
-    "pk": 59,
-    "fields": {
-      "password": "",
-      "last_login": "2024-04-16T18:30:47.980Z",
-      "is_superuser": false,
-      "is_staff": false,
-      "is_active": true,
-      "date_joined": "2024-04-16T18:30:42.522Z",
-      "phone": "986325642596",
-      "invite_code": "RAFKZX",
-      "activated_invite_code": null,
-      "ref_user": null,
-      "first_name": null,
-      "last_name": null,
-      "email": null,
-      "avatar": "",
-      "is_authenticated": false,
-      "groups": [],
-      "user_permissions": []
-    }
-  },
-  {
-    "model": "users.user",
-    "pk": 60,
-    "fields": {
-      "password": "",
-      "last_login": "2024-04-16T18:42:57.796Z",
-      "is_superuser": false,
-      "is_staff": false,
-      "is_active": true,
-      "date_joined": "2024-04-16T18:42:52.337Z",
-      "phone": "375222774987",
-      "invite_code": "JG7Y6L",
-      "activated_invite_code": "RAFKZX",
-      "ref_user": 16,
-      "first_name": "123",
-      "last_name": null,
-      "email": "",
-      "avatar": "",
-      "is_authenticated": false,
-      "groups": [],
-      "user_permissions": []
-    }
-  }]
+]
