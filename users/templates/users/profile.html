@@ -41,8 +41,7 @@
                 {% endif %}
                 {% if user.activated_invite_code %}
                 <div class="mt-4">
-                    <p><strong>Френд-код друга, который вы успешно активировали:</strong> {{ user.activated_invite_code
-                        }}</p>
+                    <p><strong>Френд-код друга, который вы успешно активировали:</strong> {{user.activated_invite_code}}</p>
                 </div>
                 {% else %}
                 <!-- Показываем форму для ввода чужого инвайт-кода только если инвайт-код не был активирован -->

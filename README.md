@@ -46,9 +46,13 @@ python manage.py migrate
 
 Создать суперюзера
 python manage.py createsuperuser
+Для создания суперюзера можно использовать шаблон users/scripts/create_superuser_simple.py
+
 
 Заполнить БД данными из users/fixtures/users.json
 python manage.py loaddata users.json
+Для создания пользователей можно использовать шаблон users/scripts/create_new_user_sample.py
+
 
 Запуск проекта
 После завершения настройки вы можете запустить сервер Django для развертывания вашего проекта:

@@ -61,7 +61,7 @@ class UserProfileAPIView(APIView):
 @login_required
 def edit_profile_view(request):
     if request.method == 'POST':
-        form = ProfileForm(request.POST, instance=request.user)
+        form = ProfileForm(request.POST, instance=request.user, files=request.FILES)
         if form.is_valid():
             form.save()
             return redirect('users:user_profile')  # Перенаправление на страницу профиля после сохранения
