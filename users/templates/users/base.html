@@ -16,11 +16,15 @@
 <div class="container">
     <!-- Включение верхнего меню -->
     {% include 'includes/navbar.html' %}
+
+        <!-- Здесь будет блок для заголовка -->
+    {% block title %}
     <div class="py-5 text-center">
         <img src="{% static 'img/logo.jpg' %}" alt="Логотип" width="200" height="150">
         <h1 class="mb-4">Добро пожаловать в реферальную систему!</h1>
         <p class="lead">{{ welcome_message }}</p>
     </div>
+    {% endblock %}
 
     <!-- Здесь будет блок для контента -->
     {% block content %}

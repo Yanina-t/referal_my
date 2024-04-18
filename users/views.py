@@ -34,6 +34,9 @@ class UserProfileAPIView(APIView):
             # Получаем список рефералов текущего пользователя
             referral_users = self.get_referral_users(user)
 
+            # Вычисляем количество бонусов
+            bonus_count = int(len(referral_users)) * 10
+
             # Создаем сериализатор для списка рефералов
             referral_serializer = UserProfileSerializer(referral_users, many=True)
 
@@ -44,7 +47,8 @@ class UserProfileAPIView(APIView):
             context = {
                 'user': user,
                 'referrals': referral_serializer.data,
-                'serializer': user_serializer
+                'serializer': user_serializer,
+                'bonus_count': bonus_count
             }
 
             return Response(context, template_name=self.template_name)

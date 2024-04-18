@@ -3,7 +3,9 @@
 {% load static %}
 
 {% block title %}
-Личный кабинет - {{ user.first_name }} ({{ user.phone }})
+<div class="py-5 text-center">
+    <h2 class="mb-4">Личный кабинет - {{user.first_name}} ({{ user.phone }})</h2>
+</div>
 {% endblock %}
 
 {% block content %}
@@ -14,14 +16,14 @@
             <img src="{{ user.avatar.url }}" alt="Аватар пользователя" class="img-fluid rounded-circle"
                  style="width: 200px; height: 200px;">
             {% else %}
-            <img src="{% static 'default_avatars/default_avatars.jpg' %}" alt="Аватар пользователя" class="img-fluid rounded-circle"
+            <img src="{% static 'default_avatars/default_avatars.jpg' %}" alt="Аватар пользователя"
+                 class="img-fluid rounded-circle"
                  style="width: 200px; height: 200px;">
             {% endif %}
         </div>
 
         <div class="col-md-12">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2>Личный кабинет</h2>
                 <div>
                     <a href="{% url 'users:edit_profile' %}" class="btn btn-secondary">Редактировать профиль</a>
                 </div>
@@ -33,6 +35,7 @@
                 <p><strong>Фамилия:</strong> {{ user.last_name }}</p>
                 {% if user.invite_code %}
                 <div class="mb-2" id="friendCodeContainer">
+                    <h2>Пригласить друзей</h2>
                     <p class="mb-0"><strong>Ваш френд-код:</strong> <span class="btn p-0" title='Скопировать'
                                                                           id="friendCodeValue">{{user.invite_code}}</span>
                     </p>
@@ -41,7 +44,8 @@
                 {% endif %}
                 {% if user.activated_invite_code %}
                 <div class="mt-4">
-                    <p><strong>Френд-код друга, который вы успешно активировали:</strong> {{user.activated_invite_code}}</p>
+                    <p><strong>Френд-код друга, который вы успешно активировали:</strong> {{user.activated_invite_code}}
+                    </p>
                 </div>
                 {% else %}
                 <!-- Показываем форму для ввода чужого инвайт-кода только если инвайт-код не был активирован -->
@@ -70,7 +74,8 @@
                     <div class="col-md-12">
                         <h3>Ваши друзья:</h3>
                         <!-- Итоговое количество рефералов -->
-                        <p>Всего друзей использовало ваш френд-код: {{ referrals|length }}</p>
+                        <p>Всего друзей использовало ваш френд-код: {{referrals|length}}</p>
+                        <p>Всего получено френд-бонусов: {{ bonus_count }}</p>
                         <table class="table">
                             <thead>
                             <tr>
