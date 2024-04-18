@@ -13,10 +13,10 @@
     <div class="row">
         <div class="col-md-3">
             {% if user.avatar %}
-            <img src="{{ user.avatar.url }}" alt="Аватар пользователя" class="img-fluid rounded-circle"
+            <img src="{{ user.avatar.url }}" alt="Фото пользователя" class="img-fluid rounded-circle"
                  style="width: 200px; height: 200px;">
             {% else %}
-            <img src="{% static 'default_avatars/default_avatars.jpg' %}" alt="Аватар пользователя"
+            <img src="{% static 'default_avatars/default_avatars.jpg' %}" alt="Фото пользователя"
                  class="img-fluid rounded-circle"
                  style="width: 200px; height: 200px;">
             {% endif %}

@@ -18,7 +18,7 @@ class User(AbstractUser):  # models.Model
     first_name = models.CharField(max_length=50, **NULLABLE, verbose_name='Имя пользователя')
     last_name = models.CharField(max_length=100, **NULLABLE, verbose_name='Фамилия пользователя')
     email = models.EmailField(**NULLABLE, verbose_name='Email')
-    avatar = models.ImageField(upload_to='avatars/', **NULLABLE)
+    avatar = models.ImageField(upload_to='avatars/', **NULLABLE, verbose_name='Фото пользователя')
     is_authenticated = models.BooleanField(default=False, verbose_name='Авторизован')
 
     USERNAME_FIELD = "phone"
