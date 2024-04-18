@@ -58,3 +58,4 @@ python manage.py loaddata users.json
 После завершения настройки вы можете запустить сервер Django для развертывания вашего проекта:
 python manage.py runserver
 
+https://yaninatv.pythonanywhere.com/verify-code/ 

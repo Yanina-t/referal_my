@@ -15,3 +15,18 @@ user.is_staff = True  # Установим статус персонала (staf
 user.save()
 
 exit()
+
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+user = User.objects.create(
+    phone='1234567899',
+    avatar=None,
+    is_active=True,
+)
+user.set_password('12345')
+user.is_superuser = True
+user.is_staff = True
+user.save()
+
+exit()
